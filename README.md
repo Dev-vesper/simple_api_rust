@@ -2,7 +2,7 @@ This is just a test repository for using Docker with Rust.
 
 # Simple API Rust with Docker
 
-[![Rust](https://img.shields.io/badge/Rust-1.75%2B-orange)](https://www.rust-lang.org)
+[![Rust](https://img.shields.io/badge/Rust%2B-orange)](https://www.rust-lang.org)
 [![Docker](https://img.shields.io/badge/Docker-✔-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com)
 [![Axum](https://img.shields.io/badge/Axum-0.7-blue?style=flat&logo=rust&logoColor=white)](https://github.com/tokio-rs/axum)
 [![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=flat&logo=sqlite&logoColor=white)](https://www.sqlite.org)
@@ -19,10 +19,10 @@ It uses **Axum** as the web framework, **rusqlite** for SQLite storage, and prov
 
 ## Docker Image Details
 
-- **Build stage base image:** `rust:1.75-slim`
+- **Build stage base image:** `rust:latest`
 - **Runtime stage base image:** `debian:bookworm-slim`
 - **Operating system:** Debian 12 (Bookworm)
-- **Rust version:** 1.75
+- **Rust version:** latest
 - **Container port:** 5070
 
 The final Docker image contains only the compiled binary and necessary runtime libraries, keeping it lightweight.
