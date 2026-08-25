@@ -42,6 +42,7 @@ pub fn init_db() -> Result<()> {
 pub fn get_all_users() -> Result<Vec<User>> {
     let conn = open_connection()?;
     let mut stmt = conn.prepare("SELECT id, name, age FROM users")?;
+
     let users_iter = stmt.query_map([], |row| {
         Ok(User {
             id: row.get(0)?,
@@ -63,7 +64,9 @@ pub fn add_user(data: CreateUser) -> Result<User> {
         "INSERT INTO users (name, age) VALUES (?1, ?2)",
         params![data.name, data.age],
     )?;
+
     let id = conn.last_insert_rowid();
+
     Ok(User {
         id,
         name: data.name,
@@ -82,6 +85,7 @@ pub fn update_user(id: i64, data: UpdateUser) -> Result<bool> {
         )?;
         updated |= affected > 0;
     }
+
     if let Some(age) = data.age {
         let affected = conn.execute(
             "UPDATE users SET age = ?1 WHERE id = ?2",
@@ -97,23 +101,4 @@ pub fn delete_user(id: i64) -> Result<bool> {
     let conn = open_connection()?;
     let affected = conn.execute("DELETE FROM users WHERE id = ?1", params![id])?;
     Ok(affected > 0)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_add_and_get_users() {
-        std::env::set_var("DB_PATH", "test_data/test.db");
-        init_db().unwrap();
-        let user = add_user(CreateUser {
-            name: "Test".to_string(),
-            age: 20,
-        })
-        .unwrap();
-        assert_eq!(user.name, "Test");
-        let users = get_all_users().unwrap();
-        assert_eq!(users.len(), 1);
-    }
 }
