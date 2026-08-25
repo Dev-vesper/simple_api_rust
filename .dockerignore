@@ -1,0 +1,8 @@
+target/
+.git/
+.github/
+data/
+*.db
+.env
+Dockerfile
+.dockerignore
