@@ -7,6 +7,7 @@ use crate::models::{CreateUser, UpdateUser, User};
 
 /// a handle to the sqlite database
 /// It stores the path to the database file and provides crud operations
+#[derive(Clone)]
 pub struct Database {
     path: PathBuf,
 }
