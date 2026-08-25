@@ -19,7 +19,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/users", get(handlers::list_users).post(handlers::create_user))
         .route("/users/sorted", get(handlers::sorted_users))
         .route(
-            "/users/:id",
+            "/users/{id}",
             put(handlers::update_user).delete(handlers::delete_user),
         )
         .with_state(database); // Pass the Database as shared state
