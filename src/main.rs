@@ -1,35 +1,33 @@
-use simple_api_rust::{db, handlers, models};
+use simple_api_rust::{db::Database, handlers};
 
 use axum::{
     routing::{get, put},
     Router,
 };
+use std::path::Path;
 use tracing_subscriber;
 
-#[tokio::main] // Sets up the Tokio async runtime and makes `main` async
+#[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt::init();
 
-    // Create the database table if it doesn't exist.
-    db::init_db()?;
+    // Use the default database path (or from env for production flexibility).
+    let db_path = std::env::var("DB_PATH").unwrap_or_else(|_| "data/app.db".to_string());
+    let database = Database::new(Path::new(&db_path))?;
 
-    // Build the service router.
-    // Each route maps an HTTP method and path to a handler function.
     let app = Router::new()
         .route("/users", get(handlers::list_users).post(handlers::create_user))
         .route("/users/sorted", get(handlers::sorted_users))
         .route(
             "/users/:id",
             put(handlers::update_user).delete(handlers::delete_user),
-        );
+        )
+        .with_state(database); // Pass the Database as shared state
 
-    // Bind to all network interfaces on port 5070.
-    // This matches the port exposed in the Dockerfile.
     let addr = "0.0.0.0:5070";
     tracing::info!("Server listening on {}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
-    // Start serving requests. This call runs forever until the process is killed.
     axum::serve(listener, app).await?;
 
     Ok(())

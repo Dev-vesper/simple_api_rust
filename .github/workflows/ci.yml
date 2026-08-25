@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ] # or every branchs
+    branches: [ "main" ] # or every branches
   pull_request:
     branches: [ "main" ]
 
@@ -16,7 +16,7 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
-      # stable version
+
       - name: Cache Cargo dependencies
         uses: Swatinem/rust-cache@v2
 
