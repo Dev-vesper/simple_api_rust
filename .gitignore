@@ -2,3 +2,5 @@
 /data/*.db
 /data/*.db-journal
 .env
+remover.py
+remover_results.md
