@@ -3,7 +3,7 @@ mod handlers;
 mod models;
 
 use axum::{
-    routing::{delete, get, post, put},
+    routing::{get, put},
     Router,
 };
 use tracing_subscriber;

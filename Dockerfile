@@ -15,6 +15,7 @@ COPY --from=builder /app/target/release/simple-api-rust /usr/local/bin/simple-ap
 
 ENV DB_PATH=/app/data/app.db
 
-EXPOSE 5070 #by default
+#by default
+EXPOSE 5070
 
 CMD ["simple-api-rust"]

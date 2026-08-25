@@ -12,7 +12,8 @@ fn get_db_path() -> String {
 }
 
 fn ensure_db_dir() -> Result<()> {
-    let path = Path::new(&get_db_path());
+    let db_path = get_db_path();
+    let path = Path::new(&db_path);
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
     }

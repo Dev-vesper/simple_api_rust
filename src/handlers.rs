@@ -1,8 +1,6 @@
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Path, Query},
     http::StatusCode,
-    response::IntoResponse,
-    Json,
 };
 use serde::Deserialize;
 
