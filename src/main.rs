@@ -1,4 +1,4 @@
-use simple_api_rust::{db, handlers, models}
+use simple_api_rust::{db, handlers, models};
 
 use axum::{
     routing::{get, put},
