@@ -100,8 +100,8 @@ fn validate_name(name: &str) -> Result<(), ValidationError> {
     Ok(())
 }
 
-fn validate_age(age: &i32) -> Result<(), ValidationError> {
-    if (MIN_AGE..=MAX_AGE).contains(age) {
+fn validate_age(age: i32) -> Result<(), ValidationError> {
+    if (MIN_AGE..=MAX_AGE).contains(&age) {
         Ok(())
     } else {
         Err(invalid(format!(
