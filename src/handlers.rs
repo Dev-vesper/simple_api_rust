@@ -1,47 +1,28 @@
-use axum::{
-    extract::{Path, Query, State},
-    http::StatusCode,
-    Json,
-};
-use serde::Deserialize;
+use axum::{extract::State, Json};
 
 use crate::db::Database;
+use crate::error::{ApiError, ApiResult};
 use crate::models::{CreateUser, UpdateUser, User};
+use crate::validation::{SortKey, SortedUsersQuery, UserId, ValidatedJson, ValidatedQuery};
 
-#[derive(Deserialize)]
-pub struct SortParams {
-    pub key: Option<String>,
-    pub reverse: Option<String>,
-}
-
-pub async fn list_users(
-    State(db): State<Database>,
-) -> Result<Json<Vec<User>>, (StatusCode, String)> {
-    match db.get_all_users() {
-        Ok(users) => Ok(Json(users)),
-        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
-    }
+pub async fn list_users(State(db): State<Database>) -> ApiResult<Json<Vec<User>>> {
+    let users = db.get_all_users().map_err(ApiError::internal)?;
+    Ok(Json(users))
 }
 
 pub async fn sorted_users(
     State(db): State<Database>,
-    Query(params): Query<SortParams>,
-) -> Result<Json<Vec<User>>, (StatusCode, String)> {
-    let mut users = db
-        .get_all_users()
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    ValidatedQuery(query): ValidatedQuery<SortedUsersQuery>,
+) -> ApiResult<Json<Vec<User>>> {
+    let mut users = db.get_all_users().map_err(ApiError::internal)?;
 
-    let key = params.key.unwrap_or_else(|| "id".to_string());
-    let reverse = params.reverse.unwrap_or_else(|| "false".to_string()) == "true";
-
-    match key.as_str() {
-        "id" => users.sort_by_key(|u| u.id),
-        "name" => users.sort_by(|a, b| a.name.cmp(&b.name)),
-        "age" => users.sort_by_key(|u| u.age),
-        _ => return Err((StatusCode::BAD_REQUEST, "Invalid sort key".to_string())),
+    match query.key.unwrap_or(SortKey::Id) {
+        SortKey::Id => users.sort_by_key(|user| user.id),
+        SortKey::Name => users.sort_by(|a, b| a.name.cmp(&b.name)),
+        SortKey::Age => users.sort_by_key(|user| user.age),
     }
 
-    if reverse {
+    if query.reverse.unwrap_or(false) {
         users.reverse();
     }
 
@@ -50,41 +31,31 @@ pub async fn sorted_users(
 
 pub async fn create_user(
     State(db): State<Database>,
-    Json(payload): Json<CreateUser>,
-) -> Result<Json<User>, (StatusCode, String)> {
-    if payload.name.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, "Name cannot be empty".to_string()));
-    }
-
-    match db.add_user(payload) {
-        Ok(user) => Ok(Json(user)),
-        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
-    }
+    ValidatedJson(payload): ValidatedJson<CreateUser>,
+) -> ApiResult<Json<User>> {
+    let user = db.add_user(payload.normalized()).map_err(ApiError::internal)?;
+    Ok(Json(user))
 }
 
 pub async fn update_user(
     State(db): State<Database>,
-    Path(id): Path<i64>,
-    Json(payload): Json<UpdateUser>,
-) -> Result<Json<&'static str>, (StatusCode, String)> {
-    if payload.name.is_none() && payload.age.is_none() {
-        return Err((StatusCode::BAD_REQUEST, "At least one field required".to_string()));
-    }
-
-    match db.update_user(id, payload) {
+    id: UserId,
+    ValidatedJson(payload): ValidatedJson<UpdateUser>,
+) -> ApiResult<Json<&'static str>> {
+    match db.update_user(id.get(), payload.normalized()) {
         Ok(true) => Ok(Json("User updated")),
-        Ok(false) => Err((StatusCode::NOT_FOUND, "User not found".to_string())),
-        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+        Ok(false) => Err(ApiError::not_found("User not found")),
+        Err(error) => Err(ApiError::internal(error)),
     }
 }
 
 pub async fn delete_user(
     State(db): State<Database>,
-    Path(id): Path<i64>,
-) -> Result<Json<&'static str>, (StatusCode, String)> {
-    match db.delete_user(id) {
+    id: UserId,
+) -> ApiResult<Json<&'static str>> {
+    match db.delete_user(id.get()) {
         Ok(true) => Ok(Json("User deleted")),
-        Ok(false) => Err((StatusCode::NOT_FOUND, "User not found".to_string())),
-        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+        Ok(false) => Err(ApiError::not_found("User not found")),
+        Err(error) => Err(ApiError::internal(error)),
     }
 }

@@ -1,9 +1,5 @@
-use simple_api_rust::{db::Database, handlers};
+use simple_api_rust::{db::Database, routes};
 
-use axum::{
-    routing::{get, put},
-    Router,
-};
 use std::path::Path;
 use tracing_subscriber;
 
@@ -15,14 +11,7 @@ async fn main() -> anyhow::Result<()> {
     let db_path = std::env::var("DB_PATH").unwrap_or_else(|_| "data/app.db".to_string());
     let database = Database::new(Path::new(&db_path))?;
 
-    let app = Router::new()
-        .route("/users", get(handlers::list_users).post(handlers::create_user))
-        .route("/users/sorted", get(handlers::sorted_users))
-        .route(
-            "/users/{id}",
-            put(handlers::update_user).delete(handlers::delete_user),
-        )
-        .with_state(database); // Pass the Database as shared state
+    let app = routes::build_router(database);
 
     let addr = "0.0.0.0:5070";
     tracing::info!("Server listening on {}", addr);
