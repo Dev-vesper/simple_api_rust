@@ -49,4 +49,3 @@ pub struct SortedUsersQuery {
     pub key: Option<SortKey>,
     pub reverse: Option<bool>,
 }
-

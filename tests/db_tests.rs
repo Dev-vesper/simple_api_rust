@@ -1,7 +1,7 @@
 use simple_api_rust::db::Database;
 use simple_api_rust::models::{CreateUser, UpdateUser};
-use tempfile::TempDir;
 use std::path::PathBuf;
+use tempfile::TempDir;
 
 /// Helper to create a fresh temporary database.
 fn setup_test_db() -> (TempDir, Database) {
@@ -15,11 +15,12 @@ fn setup_test_db() -> (TempDir, Database) {
 fn test_add_and_get_users() {
     let (_temp, db) = setup_test_db();
 
-    let user = db.add_user(CreateUser {
-        name: "Ali".to_string(),
-        age: 30,
-    })
-    .expect("Failed to add user");
+    let user = db
+        .add_user(CreateUser {
+            name: "Ali".to_string(),
+            age: 30,
+        })
+        .expect("Failed to add user");
 
     assert_eq!(user.name, "Ali");
     assert_eq!(user.age, 30);
@@ -34,21 +35,23 @@ fn test_add_and_get_users() {
 fn test_update_user_partial() {
     let (_temp, db) = setup_test_db();
 
-    let user = db.add_user(CreateUser {
-        name: "Sara".to_string(),
-        age: 25,
-    })
-    .unwrap();
+    let user = db
+        .add_user(CreateUser {
+            name: "Sara".to_string(),
+            age: 25,
+        })
+        .unwrap();
 
     // Update only the name
-    let updated = db.update_user(
-        user.id,
-        UpdateUser {
-            name: Some("Sara Rezaei".to_string()),
-            age: None,
-        },
-    )
-    .unwrap();
+    let updated = db
+        .update_user(
+            user.id,
+            UpdateUser {
+                name: Some("Sara Rezaei".to_string()),
+                age: None,
+            },
+        )
+        .unwrap();
     assert!(updated);
 
     let users = db.get_all_users().unwrap();
@@ -56,14 +59,15 @@ fn test_update_user_partial() {
     assert_eq!(users[0].age, 25); // age unchanged
 
     // Update only the age
-    let updated = db.update_user(
-        user.id,
-        UpdateUser {
-            name: None,
-            age: Some(26),
-        },
-    )
-    .unwrap();
+    let updated = db
+        .update_user(
+            user.id,
+            UpdateUser {
+                name: None,
+                age: Some(26),
+            },
+        )
+        .unwrap();
     assert!(updated);
 
     let users = db.get_all_users().unwrap();
@@ -75,14 +79,15 @@ fn test_update_user_partial() {
 fn test_update_user_not_found() {
     let (_temp, db) = setup_test_db();
 
-    let updated = db.update_user(
-        999,
-        UpdateUser {
-            name: Some("Ghost".to_string()),
-            age: None,
-        },
-    )
-    .unwrap();
+    let updated = db
+        .update_user(
+            999,
+            UpdateUser {
+                name: Some("Ghost".to_string()),
+                age: None,
+            },
+        )
+        .unwrap();
     assert!(!updated);
 }
 
@@ -90,11 +95,12 @@ fn test_update_user_not_found() {
 fn test_delete_user() {
     let (_temp, db) = setup_test_db();
 
-    let user = db.add_user(CreateUser {
-        name: "Reza".to_string(),
-        age: 40,
-    })
-    .unwrap();
+    let user = db
+        .add_user(CreateUser {
+            name: "Reza".to_string(),
+            age: 40,
+        })
+        .unwrap();
 
     let deleted = db.delete_user(user.id).unwrap();
     assert!(deleted);

@@ -1,7 +1,7 @@
 use simple_api_rust::{db::Database, routes};
 
 use std::path::Path;
-use tracing_subscriber;
+// use tracing_subscriber;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

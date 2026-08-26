@@ -37,7 +37,11 @@ fn json_request(method: &str, uri: &str, body: String) -> Request<Body> {
 async fn seed_user(app: &Router) -> i64 {
     let (status, body) = send(
         app.clone(),
-        json_request("POST", "/users", json!({"name": "Ali", "age": 30}).to_string()),
+        json_request(
+            "POST",
+            "/users",
+            json!({"name": "Ali", "age": 30}).to_string(),
+        ),
     )
     .await;
     assert_eq!(status, StatusCode::OK);
@@ -49,7 +53,11 @@ async fn create_user_accepts_valid_payload() {
     let (_dir, app) = test_app();
     let (status, body) = send(
         app,
-        json_request("POST", "/users", json!({"name": "Ali Rezaei", "age": 16}).to_string()),
+        json_request(
+            "POST",
+            "/users",
+            json!({"name": "Ali Rezaei", "age": 16}).to_string(),
+        ),
     )
     .await;
 
@@ -64,7 +72,11 @@ async fn create_user_trims_name() {
     let (_dir, app) = test_app();
     let (status, body) = send(
         app,
-        json_request("POST", "/users", json!({"name": " Ali ", "age": 30}).to_string()),
+        json_request(
+            "POST",
+            "/users",
+            json!({"name": " Ali ", "age": 30}).to_string(),
+        ),
     )
     .await;
 
@@ -77,7 +89,11 @@ async fn create_user_rejects_blank_name() {
     let (_dir, app) = test_app();
     let (status, body) = send(
         app,
-        json_request("POST", "/users", json!({"name": "   ", "age": 30}).to_string()),
+        json_request(
+            "POST",
+            "/users",
+            json!({"name": "   ", "age": 30}).to_string(),
+        ),
     )
     .await;
 
@@ -92,7 +108,11 @@ async fn create_user_rejects_out_of_range_age() {
     for age in [15, 89] {
         let (status, body) = send(
             app.clone(),
-            json_request("POST", "/users", json!({"name": "Ali", "age": age}).to_string()),
+            json_request(
+                "POST",
+                "/users",
+                json!({"name": "Ali", "age": age}).to_string(),
+            ),
         )
         .await;
 
@@ -152,7 +172,11 @@ async fn create_user_rejects_oversized_body() {
     let big_name = "A".repeat(20 * 1024);
     let (status, _) = send(
         app,
-        json_request("POST", "/users", json!({"name": big_name, "age": 30}).to_string()),
+        json_request(
+            "POST",
+            "/users",
+            json!({"name": big_name, "age": 30}).to_string(),
+        ),
     )
     .await;
 
@@ -190,14 +214,21 @@ async fn update_user_updates_partial_fields() {
 
     let (status, _) = send(
         app.clone(),
-        json_request("PUT", &format!("/users/{id}"), json!({"name": "Sara"}).to_string()),
+        json_request(
+            "PUT",
+            &format!("/users/{id}"),
+            json!({"name": "Sara"}).to_string(),
+        ),
     )
     .await;
     assert_eq!(status, StatusCode::OK);
 
     let (status, body) = send(
         app,
-        Request::builder().uri("/users").body(Body::empty()).expect("failed to build request"),
+        Request::builder()
+            .uri("/users")
+            .body(Body::empty())
+            .expect("failed to build request"),
     )
     .await;
 

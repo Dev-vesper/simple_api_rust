@@ -21,10 +21,7 @@ pub enum ApiError {
         details: Vec<FieldError>,
     },
     #[error("{message}")]
-    Request {
-        status: StatusCode,
-        message: String,
-    },
+    Request { status: StatusCode, message: String },
     #[error("{0}")]
     NotFound(&'static str),
     #[error(transparent)]
@@ -57,9 +54,12 @@ impl IntoResponse for ApiError {
                 details,
             ),
             ApiError::Request { status, message } => (status, "REQUEST_REJECTED", message, vec![]),
-            ApiError::NotFound(message) => {
-                (StatusCode::NOT_FOUND, "NOT_FOUND", message.to_string(), vec![])
-            }
+            ApiError::NotFound(message) => (
+                StatusCode::NOT_FOUND,
+                "NOT_FOUND",
+                message.to_string(),
+                vec![],
+            ),
             ApiError::Internal(error) => {
                 tracing::error!(error = ?error, "internal server error");
                 (

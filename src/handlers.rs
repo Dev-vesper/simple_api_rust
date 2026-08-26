@@ -33,7 +33,9 @@ pub async fn create_user(
     State(db): State<Database>,
     ValidatedJson(payload): ValidatedJson<CreateUser>,
 ) -> ApiResult<Json<User>> {
-    let user = db.add_user(payload.normalized()).map_err(ApiError::internal)?;
+    let user = db
+        .add_user(payload.normalized())
+        .map_err(ApiError::internal)?;
     Ok(Json(user))
 }
 
@@ -49,10 +51,7 @@ pub async fn update_user(
     }
 }
 
-pub async fn delete_user(
-    State(db): State<Database>,
-    id: UserId,
-) -> ApiResult<Json<&'static str>> {
+pub async fn delete_user(State(db): State<Database>, id: UserId) -> ApiResult<Json<&'static str>> {
     match db.delete_user(id.get()) {
         Ok(true) => Ok(Json("User deleted")),
         Ok(false) => Err(ApiError::not_found("User not found")),

@@ -91,10 +91,8 @@ impl Database {
             updated |= affected > 0;
         }
         if let Some(age) = data.age {
-            let affected = conn.execute(
-                "UPDATE users SET age = ?1 WHERE id = ?2",
-                params![age, id],
-            )?;
+            let affected =
+                conn.execute("UPDATE users SET age = ?1 WHERE id = ?2", params![age, id])?;
             updated |= affected > 0;
         }
         Ok(updated)

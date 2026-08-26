@@ -10,7 +10,10 @@ pub const MAX_BODY_BYTES: usize = 16 * 1024;
 
 pub fn build_router(database: Database) -> Router {
     Router::new()
-        .route("/users", get(handlers::list_users).post(handlers::create_user))
+        .route(
+            "/users",
+            get(handlers::list_users).post(handlers::create_user),
+        )
         .route("/users/sorted", get(handlers::sorted_users))
         .route(
             "/users/{id}",

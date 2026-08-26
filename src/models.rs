@@ -74,7 +74,9 @@ fn validate_name(name: &str) -> Result<(), ValidationError> {
     }
 
     if trimmed.chars().count() > MAX_NAME_LEN {
-        return Err(invalid(format!("name cannot exceed {MAX_NAME_LEN} characters")));
+        return Err(invalid(format!(
+            "name cannot exceed {MAX_NAME_LEN} characters"
+        )));
     }
 
     if !trimmed.chars().all(is_allowed_in_name) {
@@ -84,7 +86,9 @@ fn validate_name(name: &str) -> Result<(), ValidationError> {
     }
 
     if !is_wrapped_by_letters(trimmed) {
-        return Err(invalid("name must start and end with an English letter".into()));
+        return Err(invalid(
+            "name must start and end with an English letter".into(),
+        ));
     }
 
     if has_adjacent_separators(trimmed) {
@@ -100,13 +104,17 @@ fn validate_age(age: &i32) -> Result<(), ValidationError> {
     if (MIN_AGE..=MAX_AGE).contains(age) {
         Ok(())
     } else {
-        Err(invalid(format!("age must be between {MIN_AGE} and {MAX_AGE}")))
+        Err(invalid(format!(
+            "age must be between {MIN_AGE} and {MAX_AGE}"
+        )))
     }
 }
 
 fn validate_update_payload(payload: &UpdateUser) -> Result<(), ValidationError> {
     if payload.name.is_none() && payload.age.is_none() {
-        Err(invalid("at least one of name or age must be provided".into()))
+        Err(invalid(
+            "at least one of name or age must be provided".into(),
+        ))
     } else {
         Ok(())
     }

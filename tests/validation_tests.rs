@@ -10,7 +10,14 @@ fn create(name: &str, age: i32) -> CreateUser {
 
 #[test]
 fn accepts_valid_english_names() {
-    for name in ["Ali", "Ali Rezaei", "O'Brien", "Mary-Jane", "d'Artagnan", "A"] {
+    for name in [
+        "Ali",
+        "Ali Rezaei",
+        "O'Brien",
+        "Mary-Jane",
+        "d'Artagnan",
+        "A",
+    ] {
         assert!(create(name, 30).validate().is_ok(), "rejected: {name}");
     }
 }
@@ -31,7 +38,15 @@ fn rejects_non_english_names() {
 
 #[test]
 fn rejects_badly_structured_names() {
-    for name in ["-Ali", "Ali-", "'Ali", "Ali'", "Ali  Rezaei", "Ali--Rezaei", "Ali''"] {
+    for name in [
+        "-Ali",
+        "Ali-",
+        "'Ali",
+        "Ali'",
+        "Ali  Rezaei",
+        "Ali--Rezaei",
+        "Ali''",
+    ] {
         assert!(create(name, 30).validate().is_err(), "accepted: {name:?}");
     }
 }
@@ -54,7 +69,10 @@ fn enforces_age_boundaries() {
 
 #[test]
 fn update_requires_at_least_one_field() {
-    let empty = UpdateUser { name: None, age: None };
+    let empty = UpdateUser {
+        name: None,
+        age: None,
+    };
     assert!(empty.validate().is_err());
 
     let name_only = UpdateUser {
