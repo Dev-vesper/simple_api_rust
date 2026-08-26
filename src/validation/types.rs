@@ -36,5 +36,17 @@ where
     }
 }
 
+#[derive(Debug, Clone, Copy, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SortKey {
+    Id,
+    Name,
+    Age,
+}
 
+#[derive(Debug, Deserialize)]
+pub struct SortedUsersQuery {
+    pub key: Option<SortKey>,
+    pub reverse: Option<bool>,
+}
 
