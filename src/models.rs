@@ -73,16 +73,16 @@ fn validate_name(name: &str) -> Result<(), ValidationError> {
         return Err(invalid("name cannot be empty or whitespace-only".into()));
     }
 
+    if !name.chars().all(is_allowed_in_name) {
+        return Err(invalid(
+            "name may only contain English letters, spaces, hyphens and apostrophes".into(),
+        ));
+    }
+
     if trimmed.chars().count() > MAX_NAME_LEN {
         return Err(invalid(format!(
             "name cannot exceed {MAX_NAME_LEN} characters"
         )));
-    }
-
-    if !trimmed.chars().all(is_allowed_in_name) {
-        return Err(invalid(
-            "name may only contain English letters, spaces, hyphens and apostrophes".into(),
-        ));
     }
 
     if !is_wrapped_by_letters(trimmed) {
@@ -93,7 +93,7 @@ fn validate_name(name: &str) -> Result<(), ValidationError> {
 
     if has_adjacent_separators(trimmed) {
         return Err(invalid(
-            "name cannot contain consecutive spaces, hyphens or apostrophes".into(),
+            "name cannot contain consecutive spaces, hyphens and apostrophes".into(),
         ));
     }
 

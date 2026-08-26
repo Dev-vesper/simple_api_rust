@@ -31,7 +31,7 @@ fn rejects_blank_names() {
 
 #[test]
 fn rejects_non_english_names() {
-    for name in ["علی", "Ali1", "Ali_Ali", "Ali.", "Ali\n"] {
+    for name in ["علی", "Ali1", "Ali_Ali", "Ali.", "Ali\n", "Ali\t", "Al\ni", "Ali\u{00A0}"] {
         assert!(create(name, 30).validate().is_err(), "accepted: {name:?}");
     }
 }
